@@ -3,6 +3,7 @@ package anticope.rejects.mixin.baritone;
 import java.util.List;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Pseudo;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -11,12 +12,12 @@ import org.spongepowered.asm.mixin.injection.At;
 import anticope.rejects.modules.OreSim;
 import baritone.api.utils.BlockOptionalMetaLookup;
 import baritone.pathing.movement.CalculationContext;
-import baritone.process.MineProcess;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 
-@Mixin(MineProcess.class)
+@Pseudo
+@Mixin(targets = "baritone.process.MineProcess", remap = false)
 public class MineProcessMixin {
     
     @Shadow(remap = false)
