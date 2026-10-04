@@ -1,0 +1,20 @@
+Cubiomes 1.22.3 (dev.duti.acheong:cubiomes)
+
+These are unmodified official release artifacts from:
+https://github.com/acheong08/cubiomes/releases/tag/1.22.3
+
+The original Maven server (maven.duti.dev) was unavailable at the time of this port.
+The Java wrapper and Cubiomes native implementation use the MIT license.
+The Java JAR also bundles hawtjni-runtime 1.21.0, licensed under Apache-2.0.
+The accompanying license files are included in the resulting add-on JAR.
+
+Source and licenses:
+https://github.com/acheong08/cubiomes/tree/1.22.3
+https://github.com/gptlang/cubiomes-c/tree/14fc8ba331480fffb4a60b5eb39134fa132398ff
+https://github.com/fusesource/hawtjni
+
+SHA-256:
+2aaad0f69ebc84e27a843fdb7534c0b1ff897399304a5ea71247d1d1f79ab61e  cubiomes-1.22.3-linux64.jar
+78feec71ecb50b040050824306bd41db2c1d23dfeed233548e904c1a36c0c016  cubiomes-1.22.3-osx.jar
+a04bb68ca1fd75afaae2412d8c8a9a3c5ae0b22ec58cd6037d115a5d9924d9ad  cubiomes-1.22.3-windows64.jar
+28d78c764e58e3dc4095b2dcacabf6c44fe388f1817bd527b9934d2f2ea9cc9a  cubiomes-1.22.3.jar
