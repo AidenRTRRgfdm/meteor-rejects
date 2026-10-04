@@ -29,6 +29,8 @@ import meteordevelopment.meteorclient.utils.render.color.SettingColor;
 import static meteordevelopment.meteorclient.MeteorClient.mc;
 
 public class MeteorRoundedGuiTheme extends GuiTheme {
+    @Override
+    public boolean modulesHelpText() { return true; }
     private final SettingGroup sgGeneral = settings.getDefaultGroup();
     private final SettingGroup sgColors = settings.createGroup("Colors");
     private final SettingGroup sgTextColors = settings.createGroup("Text");
@@ -50,7 +52,7 @@ public class MeteorRoundedGuiTheme extends GuiTheme {
             .sliderMax(4)
             .onSliderRelease()
             .onChanged(aDouble -> {
-                if (mc.screen instanceof WidgetScreen) ((WidgetScreen) mc.screen).invalidate();
+                if (mc.gui.screen() instanceof WidgetScreen) ((WidgetScreen) mc.gui.screen()).invalidate();
             })
             .build()
     );
@@ -74,7 +76,7 @@ public class MeteorRoundedGuiTheme extends GuiTheme {
             .description("Hide HUD when in GUI.")
             .defaultValue(false)
             .onChanged(v -> {
-                if (mc.screen instanceof WidgetScreen) mc.options.hideGui = v;
+                if (mc.gui.screen() instanceof WidgetScreen) mc.gameRenderer.gameRenderState().guiRenderState.isHudHidden = v;
             })
             .build()
     );
