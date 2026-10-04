@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class MeteorRejectsAddon extends MeteorAddon {
     public static final Logger LOG = LoggerFactory.getLogger("Rejects");
-    public static final Category CATEGORY = new Category("Rejects", Items.BARRIER.getDefaultInstance());
+    public static final Category CATEGORY = new Category("Rejects", Items.BARRIER::getDefaultInstance);
     public static final HudGroup HUD_GROUP = new HudGroup("Rejects");
 
     @Override
@@ -122,12 +122,12 @@ public class MeteorRejectsAddon extends MeteorAddon {
 
     @Override
     public String getWebsite() {
-        return "https://github.com/AntiCope/meteor-rejects";
+        return "https://github.com/AidenRTRRgfdm/meteor-rejects";
     }
 
     @Override
     public GithubRepo getRepo() {
-        return new GithubRepo("AntiCope", "meteor-rejects");
+        return new GithubRepo("AidenRTRRgfdm", "meteor-rejects");
     }
 
     @Override
