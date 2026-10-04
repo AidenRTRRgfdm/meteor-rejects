@@ -1,33 +1,31 @@
-<div align="center">
-  <!-- Logo and Title -->
-  <img src="/src/main/resources/assets/rejects/icon.png" alt="logo" width="20%"/>
-  <h1>Meteor Rejects</h1>
-  <p>An addon to Meteor Client that has features that won't be added to Meteor because they were either rejected or are ports from other clients.</p>
+# Meteor Rejects for Minecraft 26.2
 
-  <!-- Fancy badges -->
-  <a href="https://anticope.ml/pages/MeteorAddons.html"><img src="https://img.shields.io/badge/Verified%20Addon-Yes-blueviolet" alt="Verified Addon"></a>
-  <a href="https://github.com/AntiCope/meteor-rejects/releases"><img src="https://img.shields.io/badge/Version-v0.1-orange" alt="Version"></a>
-  <img src="https://img.shields.io/badge/spaghetti%20code-yes-success?logo=java" alt="Spaghetti code: yes">
-  <img src="https://img.shields.io/badge/Minecraft%20Version-1.21.11-blue" alt="Minecraft Version">
-  <a href="https://github.com/AntiCope/meteor-rejects/commits/master"><img src="https://img.shields.io/github/last-commit/AntiCope/meteor-rejects?logo=git" alt="Last commit"></a>
-  <img src="https://img.shields.io/github/workflow/status/AntiCope/meteor-rejects/Java%20CI%20with%20Gradle?logo=github" alt="build status">
-  <img src="https://img.shields.io/github/languages/code-size/AntiCope/meteor-rejects" alt="Code Size">
-  <img src="https://img.shields.io/github/repo-size/AntiCope/meteor-rejects" alt="Repo Size">
-  <img src="https://img.shields.io/github/issues/AntiCope/meteor-rejects" alt="Issues">
-  <img src="https://img.shields.io/github/stars/AntiCope/meteor-rejects" alt="Stars">
-</div>
+A Minecraft 26.2 port of [AntiCope/meteor-rejects](https://github.com/AntiCope/meteor-rejects), based on upstream commit `6a56030`. All 58 registered upstream modules, 17 commands, Radar HUD, and Meteor Rounded theme are retained. Original author credits, feature attribution and GPL-3.0 license are preserved.
 
-<hr />
+## Install
 
-<div align="center">
-  <a href="https://discord.gg/9mrRPGKYU3"><img src="https://invidget.switchblade.xyz/9mrRPGKYU3"></a>
-</div>
+Use Minecraft **26.2**, Fabric Loader **0.19.3 or newer**, Java **25**, and Meteor Client **26.2 build 32**. Download `meteor-rejects-addon-0.3.1+26.2.jar` from this fork's [releases](https://github.com/AidenRTRRgfdm/meteor-rejects/releases) and put it beside Meteor in your profile's `mods` directory. Remove other copies of Meteor Rejects first.
 
-# How to use
-- Download the latest [release](/../../releases) of the mod from the releases tab.
-- Put it in your `.minecraft/mods` folder where you have installed Meteor.
+Baritone is optional. Install **Baritone for 26.2** for Baritone-dependent features. Exploit Preventer remains optional. This JAR does not contain Meteor or Baritone.
 
-*Note: It is recommended to use the [latest build](https://meteorclient.com/) of meteor while using rejects*
+## Build and validate
+
+With a Java 25 JDK selected:
+
+```sh
+./gradlew build
+./gradlew -PclientTests runClientGameTest
+```
+
+The normal build produces `build/libs/meteor-rejects-addon-0.3.1+26.2.jar`. The client test starts a separate disposable local Minecraft instance and checks mixin application, all module and command registrations, configuration roundtrip, the center command in a local world, and interaction/rounded GUI rendering. Test code and its extra dependencies are excluded from the release JAR.
+
+Meteor is pinned to Maven build `26.2-20261002.183827-32`. Cubiomes 1.22.3 is vendored from its original official release because its Maven host is unavailable; source links, hashes and licenses are in `libs/cubiomes/NOTICE.txt`.
+
+## Known limits
+
+Multiplayer server-specific behavior and custom account authentication have not been validated. Later Meteor snapshots can change private APIs used by this add-on.
+
+OreSim retains the upstream estimation algorithm and the client's vanilla ore feature registry. Exact 26.2 predictions are unverified and can differ with old generated chunks, custom world generation, or modified terrain. The upstream Cubiomes and Seedfinding structure fallback supports older generation versions; it is not a verified 26.2 structure predictor.
 
 # Features
 ## Modules

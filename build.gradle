@@ -1,11 +1,12 @@
 plugins {
 	id 'java'
-	id 'fabric-loom' version '1.14-SNAPSHOT'
+	id 'net.fabricmc.fabric-loom' version '1.17.21'
 }
 
 java {
+    withSourcesJar()
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(21)
+		languageVersion = JavaLanguageVersion.of(25)
 	}
 }
 
@@ -23,7 +24,6 @@ repositories {
 	maven { url "https://maven.seedfinding.com/" }
 	maven { url "https://maven-snapshots.seedfinding.com/" }
 	maven { url 'https://jitpack.io' }
-	maven { url 'https://maven.duti.dev/releases' }
 }
 
 loom {
@@ -36,18 +36,19 @@ configurations {
 }
 
 dependencies {
-	// This will make it work on most platforms. It automatically chooses the right dependencies at runtime.
-	extraLibs('dev.duti.acheong:cubiomes:1.22.3') { transitive = false }
-	extraLibs('dev.duti.acheong:cubiomes:1.22.3:linux64') { transitive = false }
-	extraLibs('dev.duti.acheong:cubiomes:1.22.3:osx') { transitive = false }
-	extraLibs('dev.duti.acheong:cubiomes:1.22.3:windows64') { transitive = false }
+	// Exact upstream release artifacts; the original Maven host is unavailable.
+	// Each platform's native library is selected automatically at runtime.
+	extraLibs files('libs/cubiomes/cubiomes-1.22.3.jar',
+		'libs/cubiomes/cubiomes-1.22.3-linux64.jar',
+		'libs/cubiomes/cubiomes-1.22.3-osx.jar',
+		'libs/cubiomes/cubiomes-1.22.3-windows64.jar')
 	// To change the versions see the gradle.properties file
 	minecraft "com.mojang:minecraft:${project.minecraft_version}"
-	mappings loom.officialMojangMappings()
-	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+	implementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
-	modImplementation("meteordevelopment:meteor-client:${project.minecraft_version}-SNAPSHOT")
-    modCompileOnly "meteordevelopment:baritone:${project.baritone_version}-SNAPSHOT"
+	implementation("meteordevelopment:meteor-client:${project.meteor_version}")
+    compileOnly "meteordevelopment:baritone:${project.baritone_version}"
+    compileOnly "net.fabricmc.fabric-api:fabric-resource-loader-v1:2.0.13+9edec1269e"
 
 	// seed .locate and ore sim
 	extraLibs('com.seedfinding:mc_math:ffd2edcfcc0d18147549c88cc7d8ec6cf21b5b91') { transitive = false }
@@ -63,7 +64,7 @@ dependencies {
 //	implementation (include('com.github.19MisterX98.SeedcrackerX:seedcrackerx-api:master-SNAPSHOT')) {transitive = false}
 
 	// Exploit Preventer (optional)
-	modCompileOnly("com.nikoverflow:exploit-preventer-api:0.0.1")
+	compileOnly("com.nikoverflow:exploit-preventer-api:0.0.1")
 
 	configurations.implementation.extendsFrom(configurations.extraLibs)
 }
@@ -80,8 +81,12 @@ processResources {
 }
 
 jar {
+	from('libs/cubiomes') {
+		include 'LICENSE-*', 'NOTICE.txt'
+		into 'META-INF/licenses/cubiomes'
+	}
 	from("LICENSE") {
-		rename { "${it}_${base.archivesName}" }
+		rename { "${it}_${project.archives_base_name}" }
 	}
 	from {
 		configurations.extraLibs.collect { it.isDirectory() ? it : zipTree(it) }
@@ -98,11 +103,28 @@ tasks.withType(JavaCompile).configureEach {
 	// If Javadoc is generated, this must be specified in that task too.
 	it.options.encoding = "UTF-8"
 
-	// The Minecraft launcher currently installs Java 8 for users, so your mod probably wants to target Java 8 too
-	// JDK 9 introduced a new way of specifying this that will make sure no newer classes or methods are used.
-	// We'll use that if it's available, but otherwise we'll use the older option.
-	def targetVersion = 21
+	// Minecraft 26.2 requires Java 25.
+	def targetVersion = 25
 	if (JavaVersion.current().isJava9Compatible()) {
 		 it.options.release = targetVersion
 	}
+}
+
+// Disposable local client tests; their mod and dependencies never enter the release JAR.
+if (providers.gradleProperty('clientTests').isPresent()) {
+    dependencies {
+        implementation 'net.fabricmc.fabric-api:fabric-api:0.160.0+26.2'
+        if (providers.gradleProperty("withBaritone").isPresent()) {
+            runtimeOnly "meteordevelopment:baritone:${project.baritone_version}"
+        }
+    }
+    fabricApi {
+        configureTests {
+            createSourceSet = true
+            modId = 'meteor-rejects-gametest'
+            enableGameTests = false
+            enableClientGameTests = true
+            eula = true
+        }
+    }
 }
