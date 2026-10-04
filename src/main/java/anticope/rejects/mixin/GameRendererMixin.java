@@ -4,7 +4,6 @@ import anticope.rejects.modules.Rendering;
 import com.mojang.blaze3d.resource.CrossFrameResourcePool;
 import meteordevelopment.meteorclient.systems.modules.Modules;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.PostChain;
 import org.spongepowered.asm.mixin.Final;
@@ -15,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(GameRenderer.class)
 public class GameRendererMixin {
-    @Shadow @Final Minecraft minecraft;
     @Shadow @Final
     CrossFrameResourcePool resourcePool;
 
@@ -27,7 +25,7 @@ public class GameRendererMixin {
 
         if (shader != null) {
 //            shader.setupDimensions(client.getWindow().getFramebufferWidth(), client.getWindow().getFramebufferHeight());
-            shader.process(this.minecraft.getMainRenderTarget(), this.resourcePool);
+            shader.process(((GameRenderer) (Object) this).mainRenderTarget(), this.resourcePool);
         }
     }
 }
