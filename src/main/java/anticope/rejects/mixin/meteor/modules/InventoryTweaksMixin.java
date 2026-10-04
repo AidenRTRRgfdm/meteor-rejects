@@ -12,11 +12,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class InventoryTweaksMixin implements IInventoryTweaks {
     private Runnable callback;
 
-    @Inject(method = "lambda$steal$4", at = @At("RETURN"))
-    private void afterSteal(AbstractContainerMenu handler, CallbackInfo info) {
-        if (callback != null) {
-            callback.run();
+    @Inject(method = "moveSlots", at = @At("RETURN"))
+    private void afterSteal(AbstractContainerMenu handler, int start, int end, boolean steal, CallbackInfo info) {
+        if (steal && callback != null) {
+            Runnable completed = callback;
             callback = null;
+            completed.run();
         }
     }
 
@@ -25,8 +26,8 @@ public abstract class InventoryTweaksMixin implements IInventoryTweaks {
         this.callback = callback;
     }
 
-    @Inject(method = "lambda$new$1", at = @At("HEAD"))
-    private void onStealChanged(Boolean b, CallbackInfo info) {
+    @Inject(method = "checkAutoStealSettings", at = @At("HEAD"))
+    private void onStealChanged(CallbackInfo info) {
         callback = null;
     }
 }

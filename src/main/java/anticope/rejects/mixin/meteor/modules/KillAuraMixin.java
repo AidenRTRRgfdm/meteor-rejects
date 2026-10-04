@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 import java.util.Random;
 
@@ -98,11 +97,11 @@ public class KillAuraMixin extends Module {
         );
     }
 
-    @Inject(method = "entityCheck", at = @At(value = "RETURN", ordinal = 14), cancellable = true)
+    @Inject(method = "entityCheck", at = @At("RETURN"), cancellable = true)
     private void onReturn(Entity entity, CallbackInfoReturnable<Boolean> info) {
+        if (!info.getReturnValueZ()) return;
         if (ignoreInvisible.get() && entity.isInvisible()) info.setReturnValue(false);
         if (!RejectsUtils.inFov(entity, fov.get())) info.setReturnValue(false);
-        info.setReturnValue(info.getReturnValueZ());
     }
 
     @Inject(method = "attack", at = @At("HEAD"), cancellable = true)
@@ -110,9 +109,10 @@ public class KillAuraMixin extends Module {
         if (hitChance.get() < 100 && Math.random() > hitChance.get() / 100) info.cancel();
     }
 
-    @Inject(method = "onTick", at = @At("TAIL"), locals = LocalCapture.CAPTURE_FAILSOFT)
-    private void onTick(TickEvent.Pre event, CallbackInfo ci, Entity primary) {
-        if (randomTeleport.get() && !onlyOnLook.get()) {
+    @Inject(method = "onTick", at = @At("TAIL"))
+    private void onTick(TickEvent.Pre event, CallbackInfo ci) {
+        Entity primary = ((KillAura) (Object) this).getTarget();
+        if (primary != null && mc.player != null && randomTeleport.get() && !onlyOnLook.get()) {
             mc.player.setPos(primary.getX() + randomOffset(), primary.getY(), primary.getZ() + randomOffset());
         }
     }
@@ -126,7 +126,7 @@ public class KillAuraMixin extends Module {
     @Inject(method = "attack", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/multiplayer/MultiPlayerGameMode;attack(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/entity/Entity;)V"), cancellable = true)
     private void onHit(Entity target, CallbackInfo info) {
         ShieldBypass shieldBypass = Modules.get().get(ShieldBypass.class);
-        if (shieldBypass.isActive()) {
+        if (shieldBypass != null && shieldBypass.isActive()) {
             Cancellable dummyEvent = new Cancellable();
             shieldBypass.bypass(target, dummyEvent);
             if (dummyEvent.isCancelled()) {
