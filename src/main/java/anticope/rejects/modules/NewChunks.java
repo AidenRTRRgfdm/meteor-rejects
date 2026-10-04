@@ -94,7 +94,9 @@ public class NewChunks extends Module {
     private final Set<ChunkPos> newChunks = Collections.synchronizedSet(new HashSet<>());
     private final Set<ChunkPos> oldChunks = Collections.synchronizedSet(new HashSet<>());
     private static final Direction[] searchDirs = new Direction[] { Direction.EAST, Direction.NORTH, Direction.WEST, Direction.SOUTH, Direction.UP };
-	private final Executor taskExecutor = Executors.newSingleThreadExecutor();
+	private final Executor taskExecutor = Executors.newSingleThreadExecutor(
+		Thread.ofPlatform().name("meteor-rejects-new-chunks").daemon(true).factory()
+	);
 
     public NewChunks() {
         super(MeteorRejectsAddon.CATEGORY,"new-chunks", "Detects completely new chunks using certain traits of them");
@@ -144,7 +146,7 @@ public class NewChunks extends Module {
 
 			packet.runUpdates((pos, state) -> {
 				if (!state.getFluidState().isEmpty() && !state.getFluidState().isSource()) {
-					ChunkPos chunkPos = new ChunkPos(pos);
+					ChunkPos chunkPos = ChunkPos.containing(pos);
 
 					for (Direction dir: searchDirs) {
 						if (mc.level.getBlockState(pos.relative(dir)).getFluidState().isSource() && !oldChunks.contains(chunkPos)) {
@@ -160,7 +162,7 @@ public class NewChunks extends Module {
 			ClientboundBlockUpdatePacket packet = (ClientboundBlockUpdatePacket) event.packet;
 
 			if (!packet.getBlockState().getFluidState().isEmpty() && !packet.getBlockState().getFluidState().isSource()) {
-				ChunkPos chunkPos = new ChunkPos(packet.getPos());
+				ChunkPos chunkPos = ChunkPos.containing(packet.getPos());
 
 				for (Direction dir: searchDirs) {
 					if (mc.level.getBlockState(packet.getPos().relative(dir)).getFluidState().isSource() && !oldChunks.contains(chunkPos)) {

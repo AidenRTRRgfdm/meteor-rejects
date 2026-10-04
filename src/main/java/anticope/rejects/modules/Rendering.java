@@ -29,7 +29,7 @@ public class Rendering extends Module {
 			.defaultValue(true)
             .onChanged(onChanged -> {
                 if(this.isActive()) {
-                    mc.levelRenderer.allChanged();
+                    reloadGeometry();
                 }
             })
 			.build()
@@ -72,12 +72,12 @@ public class Rendering extends Module {
 
     @Override
     public void onActivate() {
-        mc.levelRenderer.allChanged();
+        reloadGeometry();
     }
 
     @Override
     public void onDeactivate() {
-        mc.levelRenderer.allChanged();
+        reloadGeometry();
     }
 
     public void onChanged(Shader s) {
@@ -91,6 +91,12 @@ public class Rendering extends Module {
 
         Identifier shaderID = Identifier.withDefaultNamespace(name);
         this.shader = mc.getShaderManager().getPostChain(shaderID, LevelTargetBundle.MAIN_TARGETS);
+    }
+
+    private void reloadGeometry() {
+        if (mc.level != null) {
+            mc.levelRenderer.invalidateCompiledGeometry(mc.level, mc.options, mc.gameRenderer.mainCamera(), mc.getBlockColors());
+        }
     }
 
     public boolean renderStructureVoid() {

@@ -51,7 +51,7 @@ public class AutoLogin extends Module {
             .build()
     );
 
-    private final Timer timer = new Timer();
+    private final Timer timer = new Timer("meteor-rejects-auto-login", true);
 
     public AutoLogin() {
         super(MeteorRejectsAddon.CATEGORY, "auto-login", "Runs command when joining specified server.");
