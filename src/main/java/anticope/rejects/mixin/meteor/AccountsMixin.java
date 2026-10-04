@@ -3,21 +3,25 @@ package anticope.rejects.mixin.meteor;
 import anticope.rejects.utils.accounts.CustomYggdrasilAccount;
 import meteordevelopment.meteorclient.systems.accounts.Account;
 import meteordevelopment.meteorclient.systems.accounts.Accounts;
+import meteordevelopment.meteorclient.utils.misc.NbtException;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.Tag;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
-@Mixin(value = Accounts.class)
+@Mixin(value = Accounts.class, remap = false)
 public class AccountsMixin {
-    @Inject(method = "lambda$fromTag$0", at = @At(value = "INVOKE", target = "Lnet/minecraft/nbt/CompoundTag;getString(Ljava/lang/String;)Ljava/lang/String;"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private static void onFromTag(Tag tag1, CallbackInfoReturnable<Account<?>> cir, CompoundTag t) {
-        if (t.getString("type").equals("Yggdrasil")) {
-            Account<CustomYggdrasilAccount> account = new CustomYggdrasilAccount(null, null, null).fromTag(t);
-            if (account.fetchInfo()) cir.setReturnValue(account);
+    @Inject(method = "lambda$fromTag$1(Lnet/minecraft/nbt/Tag;)Lmeteordevelopment/meteorclient/systems/accounts/Account;", at = @At("HEAD"), cancellable = true)
+    private static void onFromTag(Tag tag, CallbackInfoReturnable<Account<?>> cir) {
+        if (tag instanceof CompoundTag accountTag && accountTag.getStringOr("type", "").equals("Yggdrasil")) {
+            try {
+                CustomYggdrasilAccount account = new CustomYggdrasilAccount(null, null, null).fromTag(accountTag);
+                cir.setReturnValue(account);
+            } catch (NbtException exception) {
+                cir.setReturnValue(null);
+            }
         }
     }
 }
